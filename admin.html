@@ -27,7 +27,24 @@
       padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-    @media (max-width: 600px) {
+    .form-responsive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 140px;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .supabase-input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .action-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 640px) {
       body.admin-page {
         padding: 10px 8px !important;
       }
@@ -36,6 +53,20 @@
       }
       .admin-title {
         font-size: 15px !important;
+      }
+      .form-responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .supabase-input-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .action-buttons-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .action-buttons-grid .btn {
+        width: 100% !important;
+        padding: 12px 10px !important;
+        font-size: 10px !important;
       }
     }
     .admin-header {
@@ -302,20 +333,20 @@
       <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">
         Pwede kang mag-entry ng player score nang direkta mula sa Admin Panel.
       </p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 160px; gap: 12px; align-items: flex-end;">
+      <div class="form-responsive-grid">
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">Pangalan ng Player:</label>
-          <input type="text" id="adminPlayerName" class="player-input" placeholder="Pangalan..." style="padding: 10px;">
+          <input type="text" id="adminPlayerName" class="player-input" placeholder="Pangalan..." style="padding: 10px; width: 100%;">
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">Ginamit na Character:</label>
-          <select id="adminPlayerCharSelect" class="player-input" style="padding: 10px; cursor: pointer;">
+          <select id="adminPlayerCharSelect" class="player-input" style="padding: 10px; cursor: pointer; width: 100%;">
             <!-- Populated dynamically -->
           </select>
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">Score (Points):</label>
-          <input type="number" id="adminPlayerScore" class="player-input" placeholder="Hal: 25" min="0" max="9999" style="padding: 10px;">
+          <input type="number" id="adminPlayerScore" class="player-input" placeholder="Hal: 25" min="0" max="9999" style="padding: 10px; width: 100%;">
         </div>
         <div>
           <button class="btn btn-primary" id="adminAddScoreBtn" style="width: 100%; padding: 12px; font-size: 10px;">
@@ -339,25 +370,25 @@
         Kahit i-upload mo sa Vercel ang laro, kapag nakakabit sa Supabase ay magiging <b>shared online</b> ang leaderboard at mga characters para sa lahat ng maglalaro!
       </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+      <div class="supabase-input-grid">
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">Supabase Project URL:</label>
-          <input type="text" id="supabaseUrlInput" class="player-input" placeholder="https://xyzxyz.supabase.co" style="padding: 10px; font-size: 12px;">
+          <input type="text" id="supabaseUrlInput" class="player-input" placeholder="https://xyzxyz.supabase.co" style="padding: 10px; font-size: 12px; width: 100%;">
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">Supabase Anon Public Key:</label>
-          <input type="text" id="supabaseKeyInput" class="player-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="padding: 10px; font-size: 12px;">
+          <input type="text" id="supabaseKeyInput" class="player-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="padding: 10px; font-size: 12px; width: 100%;">
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn btn-primary" id="saveSupabaseBtn" style="font-size: 10px; padding: 10px 14px;">
+      <div class="action-buttons-grid">
+        <button class="btn btn-primary" id="saveSupabaseBtn">
           💾 I-SAVE ANG SUPABASE CREDENTIALS
         </button>
-        <button class="btn btn-secondary" id="syncCharsToSupabaseBtn" style="font-size: 10px; padding: 10px 14px;">
+        <button class="btn btn-secondary" id="syncCharsToSupabaseBtn">
           📤 I-UPLOAD ANG MGA CHARACTERS SA SUPABASE
         </button>
-        <button class="btn btn-gold" id="showSqlBtn" style="font-size: 10px; padding: 10px 14px;">
+        <button class="btn btn-gold" id="showSqlBtn">
           📋 TINGNAN ANG SQL TABLES SCRIPT
         </button>
       </div>
