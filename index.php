@@ -24,8 +24,8 @@
     <!-- 1. Start / Character Selection Overlay -->
     <div class="overlay" id="startOverlay">
       <div class="title-container">
-        <h1 class="game-title">FLAPPY<br>BARKADA</h1>
-        <div class="game-subtitle">Dynamic Character Edition</div>
+        <h1 class="game-title">FLAPPY<br>UMBOY BARKADA</h1>
+        <div class="game-subtitle">Taga-Umboy Character Edition</div>
       </div>
 
       <div class="input-group">

@@ -211,6 +211,10 @@ class FlappyGame {
     });
 
     window.addEventListener('keydown', (e) => {
+      // Huwag i-block ang spacebar kapag nagta-type sa input o textarea
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        return;
+      }
       if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
         doJump();
