@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Flappy Barkada - Custom Flappy Bird Game</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="game-wrapper" id="gameWrapper">
+    <!-- Top Quick Controls -->
+    <div class="top-controls">
+      <button class="icon-btn" id="soundBtn" title="Sound On/Off">🔊</button>
+      <button class="icon-btn" id="leaderboardBtnTop" title="Leaderboard">🏆</button>
+    </div>
+
+    <!-- Floating In-game Score -->
+    <div class="ingame-score" id="ingameScore" style="display: none;">0</div>
+
+    <!-- HTML5 Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- 1. Start / Character Selection Overlay -->
+    <div class="overlay" id="startOverlay">
+      <div class="title-container">
+        <h1 class="game-title">FLAPPY<br>BARKADA</h1>
+        <div class="game-subtitle">Dynamic Character Edition</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="playerNameInput">Pangalan ng Manlalaro</label>
+        <input type="text" id="playerNameInput" class="player-input" placeholder="Ilagay ang iyong pangalan..." maxlength="16" value="Player 1">
+      </div>
+
+      <div class="char-selector-container">
+        <label class="input-label">Pumili ng Character</label>
+        <div class="char-grid" id="charGrid">
+          <!-- Populated dynamically by CharacterManager -->
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn">▶ MAGSIMULA</button>
+        <button class="btn btn-secondary" id="openLeaderboardBtn">🏆 RANKS</button>
+      </div>
+
+      <div class="tap-hint">
+        <span>💡 Tap/Click o pindutin ang <b>SPACEBAR</b> para lumipad</span>
+      </div>
+    </div>
+
+    <!-- 2. Game Over Overlay -->
+    <div class="overlay hidden" id="gameOverOverlay">
+      <div class="title-container">
+        <h2 class="game-title" style="color: #e74c3c; font-size: 20px;">GAME OVER</h2>
+      </div>
+
+      <div class="score-board-card">
+        <div class="medal-box">
+          <div class="medal-icon" id="medalIcon">🥇</div>
+          <div>
+            <div style="font-size: 10px; color: #64748b; font-weight:700;">MEDAL EARNED</div>
+            <div class="medal-info" id="medalText">Gold Master!</div>
+          </div>
+        </div>
+
+        <div class="score-row">
+          <span class="score-label">SCORE:</span>
+          <span class="score-val" id="finalScore">0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">BEST:</span>
+          <span class="score-val" id="finalBestScore">0</span>
+        </div>
+      </div>
+
+      <div id="saveStatusMsg" class="status-msg"></div>
+
+      <div style="display: flex; flex-direction: column; width: 100%; gap: 8px;">
+        <button class="btn btn-gold" id="saveScoreBtn">💾 I-SAVE ANG SCORE</button>
+        <button class="btn btn-primary" id="restartBtn">🔄 ULITIN (PLAY AGAIN)</button>
+        <button class="btn btn-secondary" id="changeCharBtn">👤 PALITAN ANG CHARACTER</button>
+      </div>
+    </div>
+
+    <!-- 3. Leaderboard Overlay -->
+    <div class="overlay hidden" id="leaderboardOverlay">
+      <div class="title-container" style="margin-bottom: 12px;">
+        <h2 class="game-title" style="font-size: 18px; color: #f1c40f;">🏆 LEADERBOARD</h2>
+        <div class="game-subtitle">Highest to Lowest Scores</div>
+      </div>
+
+      <div class="leaderboard-panel">
+        <div class="leaderboard-list" id="leaderboardList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="closeLeaderboardBtn">BUMALIK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/characters.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script>
+    const charManager = new CharacterManager();
+    window.charManager = charManager;
+    const leaderboard = new LeaderboardManager();
+    const canvas = document.getElementById('gameCanvas');
+    const game = new FlappyGame(canvas);
+
+    let selectedCharId = 1;
+
+    // Sync characters with Supabase if configured
+    charManager.syncWithCloud().then(() => {
+      renderCharacterGrid();
+    });
+
+    // Render Dynamic Characters Grid
+    function renderCharacterGrid() {
+      const charGrid = document.getElementById('charGrid');
+      charGrid.innerHTML = '';
+      const characters = charManager.getCharacters();
+
+      characters.forEach(char => {
+        const card = document.createElement('div');
+        card.className = `char-card ${char.id === selectedCharId ? 'selected' : ''}`;
+        card.id = `char-card-${char.id}`;
+        card.innerHTML = `
+          <img class="char-img" src="${char.image}" alt="${char.name}">
+          <div class="char-name">${char.name}</div>
+        `;
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedCharId = char.id;
+          game.selectCharacter(char.id, char.name);
+        });
+        charGrid.appendChild(card);
+      });
+
+      // Reload images in game engine
+      game.reloadCharacters();
+    }
+
+    renderCharacterGrid();
+
+    // Auto-refresh characters when returning from Admin tab
+    window.addEventListener('focus', () => {
+      renderCharacterGrid();
+    });
+
+    // Sound toggle
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', () => {
+      const isMuted = game.sound.toggleMute();
+      soundBtn.innerText = isMuted ? '🔇' : '🔊';
+    });
+
+    // Player Name Input Sync
+    const nameInput = document.getElementById('playerNameInput');
+    if (localStorage.getItem('flappy_player_name')) {
+      nameInput.value = localStorage.getItem('flappy_player_name');
+    }
+    nameInput.addEventListener('input', (e) => {
+      game.setPlayerName(e.target.value);
+    });
+
+    // Start Button
+    document.getElementById('startBtn').addEventListener('click', () => {
+      game.setPlayerName(nameInput.value);
+      const currentChar = charManager.getCharacterById(selectedCharId);
+      game.selectCharacter(selectedCharId, currentChar ? currentChar.name : `Character ${selectedCharId}`);
+      game.start();
+    });
+
+    // Play Again / Restart Button
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      document.getElementById('saveStatusMsg').innerText = '';
+      document.getElementById('saveScoreBtn').disabled = false;
+      document.getElementById('saveScoreBtn').style.opacity = '1';
+      game.start();
+    });
+
+    // Change Character Button
+    document.getElementById('changeCharBtn').addEventListener('click', () => {
+      document.getElementById('gameOverOverlay').classList.add('hidden');
+      renderCharacterGrid();
+      document.getElementById('startOverlay').classList.remove('hidden');
+    });
+
+    // Save Score to Leaderboard
+    const saveScoreBtn = document.getElementById('saveScoreBtn');
+    saveScoreBtn.addEventListener('click', async () => {
+      saveScoreBtn.disabled = true;
+      saveScoreBtn.style.opacity = '0.6';
+      const statusMsg = document.getElementById('saveStatusMsg');
+      statusMsg.innerText = 'Ipinapadala ang score sa server...';
+
+      const result = await leaderboard.saveScore(
+        game.playerName,
+        game.selectedCharId,
+        game.score
+      );
+
+      if (result && result.status === 'success') {
+        statusMsg.style.color = '#2ecc71';
+        statusMsg.innerText = `✅ Naitala ang score mo! Rank #${result.rank || 1} sa Leaderboard!`;
+        setTimeout(() => {
+          showLeaderboard();
+        }, 1200);
+      } else {
+        statusMsg.style.color = '#e74c3c';
+        statusMsg.innerText = 'May kaunting aberya sa server, pero na-save ito!';
+      }
+    });
+
+    // Leaderboard display
+    async function showLeaderboard() {
+      document.querySelectorAll('.overlay').forEach(el => el.classList.add('hidden'));
+      const overlay = document.getElementById('leaderboardOverlay');
+      overlay.classList.remove('hidden');
+      const listContainer = document.getElementById('leaderboardList');
+      listContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #94a3b8;">Kinukuha ang scores...</div>';
+      const scores = await leaderboard.getScores();
+      leaderboard.renderList(listContainer, scores);
+    }
+
+    document.getElementById('openLeaderboardBtn').addEventListener('click', showLeaderboard);
+    document.getElementById('leaderboardBtnTop').addEventListener('click', showLeaderboard);
+    document.getElementById('closeLeaderboardBtn').addEventListener('click', () => {
+      document.getElementById('leaderboardOverlay').classList.add('hidden');
+      if (game.state === 'GAMEOVER') {
+        document.getElementById('gameOverOverlay').classList.remove('hidden');
+      } else {
+        document.getElementById('startOverlay').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

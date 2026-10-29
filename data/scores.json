@@ -1,0 +1,58 @@
+[
+    {
+        "id": "score_6ae37985b93354.33000810",
+        "name": "Test Champion",
+        "character_id": 9,
+        "score": 35,
+        "date": "2026-10-29 17:51:17"
+    },
+    {
+        "id": "score_init_1",
+        "name": "Boss Master",
+        "character_id": 1,
+        "score": 28,
+        "date": "2026-10-29 20:15:00"
+    },
+    {
+        "id": "score_init_2",
+        "name": "King Flapper",
+        "character_id": 4,
+        "score": 21,
+        "date": "2026-10-29 21:05:00"
+    },
+    {
+        "id": "score_init_3",
+        "name": "Legend 7",
+        "character_id": 7,
+        "score": 16,
+        "date": "2026-10-29 22:30:00"
+    },
+    {
+        "id": "score_init_4",
+        "name": "Tito Gamer",
+        "character_id": 6,
+        "score": 11,
+        "date": "2026-10-29 23:10:00"
+    },
+    {
+        "id": "score_init_5",
+        "name": "Pipito",
+        "character_id": 5,
+        "score": 6,
+        "date": "2026-10-30 00:01:00"
+    },
+    {
+        "id": "score_6ae37aa4f387a6.25132069",
+        "name": "Player 1",
+        "character_id": 1,
+        "score": 2,
+        "date": "2026-10-29 17:56:04"
+    },
+    {
+        "id": "score_6ae37a7e369cf9.78481027",
+        "name": "Player 1",
+        "character_id": 1,
+        "score": 2,
+        "date": "2026-10-29 17:55:26"
+    }
+]
