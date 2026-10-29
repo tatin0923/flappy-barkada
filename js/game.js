@@ -160,8 +160,23 @@ class FlappyGame {
 
   setupDisplay() {
     const dpr = window.devicePixelRatio || 1;
+    const parent = this.canvas.parentElement || document.body;
+    const rect = parent.getBoundingClientRect();
+
+    this.width = 400;
+    if (rect.width > 0 && rect.height > 0) {
+      this.height = Math.round(400 * (rect.height / rect.width));
+    } else {
+      this.height = 600;
+    }
+
     this.canvas.width = this.width * dpr;
     this.canvas.height = this.height * dpr;
+    if (this.ctx.resetTransform) {
+      this.ctx.resetTransform();
+    } else {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
     this.ctx.scale(dpr, dpr);
     this.ctx.imageSmoothingEnabled = true;
   }
