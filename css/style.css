@@ -27,13 +27,16 @@ body {
   color: var(--text-light);
   min-height: 100vh;
   min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
+body:not(.admin-page) {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 0;
-  margin: 0;
   touch-action: manipulation;
 }
 
@@ -536,7 +539,7 @@ canvas#gameCanvas {
    Mobile & Responsive Device Adaptations (Phones & Tablets)
    ======================================================== */
 @media (max-width: 600px), (max-height: 720px) {
-  body {
+  body:not(.admin-page) {
     padding: 0 !important;
     margin: 0 !important;
     height: 100dvh !important;
